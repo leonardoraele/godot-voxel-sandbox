@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://cpedms44i7b0u"]
+
+[ext_resource type="PackedScene" uid="uid://cb3boe6rw3hqc" path="res://scenes/prefabs/TerrainBlock.tscn" id="1_4be0i"]
+
+[node name="PlatformSegment" type="Node3D"]
+
+[node name="TerrainBlock" parent="." instance=ExtResource("1_4be0i")]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-0.667521, -0.223829, -0.710153, -2.6077e-08, 0.953748, -0.300606, 0.744591, -0.200661, -0.636647, -7.78898, 0.958245, -6.98328)

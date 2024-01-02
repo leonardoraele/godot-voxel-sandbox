@@ -78,7 +78,7 @@ public partial class VoxelMesh : MeshInstance3D {
     private void BuildMesh_SimpleMarchingCubes() {
 		VoxelData data = VoxelData.GeneratePerlin(new Aabb(Vector3.Zero, Vector3.One * 32));
 		SurfaceTool builder = new SurfaceTool();
-		builder.Begin(Mesh.PrimitiveType.TriangleStrip);
+		builder.Begin(Mesh.PrimitiveType.Triangles);
 		builder.SetColor(Colors.White);
 		// builder.SetUV(Vector2.Zero);
 		for (int z = 0; z < data.Depth - 1; z++) {

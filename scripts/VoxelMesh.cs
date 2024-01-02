@@ -84,18 +84,23 @@ public partial class VoxelMesh : MeshInstance3D {
 		for (int z = 0; z < data.Depth - 1; z++) {
 			for (int y = 0; y < data.Height - 1; y++) {
 				for (int x = 0; x < data.Width - 1; x++) {
-					int mcCaseIndex =
-						(data.Values[x, y, z] > data.SurfaceLevel ? 0b00000001 : 0)
-						+ (data.Values[x + 1, y, z] > data.SurfaceLevel ? 0b00000010 : 0)
-						+ (data.Values[x, y + 1, z] > data.SurfaceLevel ? 0b00000100 : 0)
-						+ (data.Values[x + 1, y + 1, z] > data.SurfaceLevel ? 0b00001000 : 0)
-						+ (data.Values[x, y, z + 1] > data.SurfaceLevel ? 0b00010000 : 0)
-						+ (data.Values[x + 1, y, z + 1] > data.SurfaceLevel ? 0b00100000 : 0)
-						+ (data.Values[x, y + 1, z + 1] > data.SurfaceLevel ? 0b01000000 : 0)
-						+ (data.Values[x + 1, y + 1, z + 1] > data.SurfaceLevel ? 0b10000000 : 0);
-					MarchingCubesTable.GetEdgesForCase(mcCaseIndex)
-						.Select(edge => new Vector3(x, y, z) + edge)
-						.ForEach(vertex => builder.AddVertex(vertex));
+					int mcCaseIndex = MarchingCubesTable.GetCaseIndex(
+						data.SurfaceLevel,
+						data.Densities[x, y, z],
+						data.Densities[x + 1, y, z],
+						data.Densities[x, y + 1, z],
+						data.Densities[x + 1, y + 1, z],
+						data.Densities[x, y, z + 1],
+						data.Densities[x + 1, y, z + 1],
+						data.Densities[x, y + 1, z + 1],
+						data.Densities[x + 1, y + 1, z + 1]
+					);
+					Vector3[] edges = MarchingCubesTable.GetEdgesForCase(mcCaseIndex).ToArray();
+					for (int i = 0; i < edges.Length - 2; i++) {
+						builder.AddVertex(new Vector3(x, y, -z) + edges[0]);
+						builder.AddVertex(new Vector3(x, y, -z) + edges[i + 1]);
+						builder.AddVertex(new Vector3(x, y, -z) + edges[i + 2]);
+					}
 				}
 			}
 		}

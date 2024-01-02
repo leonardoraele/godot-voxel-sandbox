@@ -31,5 +31,9 @@ drawing the dots with a single call to DebugDraw3D, and now I can see the 3D Per
 dynamic meshing before.
 
 ### 02/01/2023
-- 00:36		**Checkpoint 3** I'm using Godot's SurfaceTool tool to build a Mesh out of marching cube lookup table. It's
+- 00:36		**Checkpoint 3x** I'm using Godot's SurfaceTool tool to build a Mesh out of marching cube lookup table. It's
 	still a little buggy. I decided to commit a few different versions of it to showcase some failed attempts.
+	Also, after making some research, I discovered a few variations of the Marching Cubes algorithm, so I decided to
+	make my code flexible about the meshing algorithm. The idea is that I can come back and implement other meshing
+	algorithms and compare their performance and generated mesh.
+- 13:16		I just found out Godot uses negative Z values for "forward". This might be messing with the calculations

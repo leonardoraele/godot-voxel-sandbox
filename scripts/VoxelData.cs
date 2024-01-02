@@ -10,8 +10,8 @@ public partial record VoxelData
             NoiseType = FastNoiseLite.NoiseTypeEnum.Perlin,
 			Seed = (int) Time.GetUnixTimeFromSystem(),
         };
-		space.Position.Round();
-		space.Size.Round();
+		space.Position = space.Position.Round();
+		space.Size = space.Size.Round();
 		int width = Mathf.RoundToInt(space.Size.X);
 		int height = Mathf.RoundToInt(space.Size.Y);
 		int depth = Mathf.RoundToInt(space.Size.Z);
@@ -23,14 +23,14 @@ public partial record VoxelData
 				}
 			}
 		}
-		return new VoxelData { Values = values, Space = space };
+		return new VoxelData { Densities = values, Space = space };
 	}
 
 	public Aabb Space { get; init; }
     public float SurfaceLevel { get; init; }
-    public float[,,] Values { get; init; } = null!;
+    public float[,,] Densities { get; init; } = null!;
 
-	public int Width => this.Values.GetLength(0);
-	public int Height => this.Values.GetLength(1);
-	public int Depth => this.Values.GetLength(2);
+	public int Width => this.Densities.GetLength(0);
+	public int Height => this.Densities.GetLength(1);
+	public int Depth => this.Densities.GetLength(2);
 }

@@ -94,6 +94,7 @@ public partial class VoxelMesh : MeshInstance3D {
 						+ (data.Values[x, y + 1, z + 1] > data.SurfaceLevel ? 0b01000000 : 0)
 						+ (data.Values[x + 1, y + 1, z + 1] > data.SurfaceLevel ? 0b10000000 : 0);
 					MarchingCubesTable.GetEdgesForCase(mcCaseIndex)
+						.Select(edge => new Vector3(x, y, z) + edge)
 						.ForEach(vertex => builder.AddVertex(vertex));
 				}
 			}

@@ -1,7 +1,4 @@
 using System;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using Godot;
 
 namespace Raele.VoxelSandbox;
@@ -9,6 +6,7 @@ namespace Raele.VoxelSandbox;
 [Tool]
 public partial class VoxelMesh : MeshInstance3D {
 	[Export] public MeshingAlgorithm Algorithm = MeshingAlgorithm.SimpleMarchingCubes;
+	[Export] public Material? Material;
 	[Export] public bool Regenerate = false;
 
 	// TODO See https://transvoxel.org/ For a LOD solution for voxels
@@ -79,8 +77,9 @@ public partial class VoxelMesh : MeshInstance3D {
 		VoxelData data = VoxelData.GeneratePerlin(new Aabb(Vector3.Zero, Vector3.One * 32));
 		SurfaceTool builder = new SurfaceTool();
 		builder.Begin(Mesh.PrimitiveType.Triangles);
-		builder.SetColor(Colors.White);
-		// builder.SetUV(Vector2.Zero);
+		if (this.Material != null) {
+			builder.SetMaterial(this.Material);
+		}
 		for (int z = 0; z < data.Depth - 1; z++) {
 			for (int y = 0; y < data.Height - 1; y++) {
 				for (int x = 0; x < data.Width - 1; x++) {
@@ -103,8 +102,7 @@ public partial class VoxelMesh : MeshInstance3D {
 				}
 			}
 		}
-		ArrayMesh mesh = new ArrayMesh();
-		builder.Commit(mesh);
-		this.Mesh = mesh;
+		builder.GenerateNormals();
+		this.Mesh = builder.Commit();
 	}
 }

@@ -37,3 +37,15 @@ dynamic meshing before.
 	make my code flexible about the meshing algorithm. The idea is that I can come back and implement other meshing
 	algorithms and compare their performance and generated mesh.
 - 13:16		I just found out Godot uses negative Z values for "forward". This might be messing with the calculations
+- 22:12		At this point, the surface is being correctly meshed—or at least the surface triangles are being correctly
+	positioned—but it was impossible to properly see the geometry because the surface was not being shaded—it was a flat
+	color. I messed with the material used for the mesh, but even after enabling shading on the material, the mesh was
+	still flat. I tried downloading a random material from the internet but the surface remained flat. At first, I
+	thought it had something to do with lighting, but I created a new cube in the scene and applied the same material to
+	the cube and it was rendered properly, so I deduced it was something to so with the mesh and not the material or the
+	light. I went back to the documentation for the SurfaceTool class—the tool I used to build the mesh—and then I found
+	a method called GenerateNormals. I had no idea normals had to be pre-calculated and baked into the meshj; much less
+	that I had to manually tell the SurfaceTool to do it. Thankfully, it was just a matter of calling a method and it
+	calculated the normals for all triangles in the mesh automatically, and now I could properly see the geometry of the
+	mesh I generated, even without a material applied. (I mean, it looked like foam without a material applied, but at
+	least it was shaded properly, so I can see the geometry of the mesh)

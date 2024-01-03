@@ -49,3 +49,7 @@ dynamic meshing before.
 	calculated the normals for all triangles in the mesh automatically, and now I could properly see the geometry of the
 	mesh I generated, even without a material applied. (I mean, it looked like foam without a material applied, but at
 	least it was shaded properly, so I can see the geometry of the mesh)
+
+### 03/01/2023
+- 00:48		**Checkpoint 4: Implemented Minecraft meshing algorithm** I implemented Minecraft meshing algorithm to
+	compare the result of the marching cube with the simple block-based algorithm.

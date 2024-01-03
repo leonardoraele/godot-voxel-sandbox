@@ -9,13 +9,17 @@ public partial class VoxelMesh : MeshInstance3D {
 	[Export] public Material? Material;
 	[Export] public bool Regenerate = false;
 
-	// TODO See https://transvoxel.org/ For a LOD solution for voxels
-	// TODO See https://en.wikipedia.org/wiki/Mesh_generation#Techniques for more meshing algorithms.
-	// TODO More resources:
-	// https://paulbourke.net/geometry/polygonise/
-	// https://developer.nvidia.com/gpugems/gpugems3/part-i-geometry/chapter-1-generating-complex-procedural-terrains-using-gpu
-	// https://people.eecs.berkeley.edu/~jrs/meshpapers/LorensenCline.pdf
-	public enum MeshingAlgorithm {
+	private MeshingAlgorithm LastAlgorithm = MeshingAlgorithm.SimpleMarchingCubes;
+    private VoxelData Data = new VoxelData();
+
+    // TODO See https://transvoxel.org/ For a LOD solution for voxels
+    // TODO See https://en.wikipedia.org/wiki/Mesh_generation#Techniques for more meshing algorithms.
+    // TODO More resources:
+    // https://paulbourke.net/geometry/polygonise/
+    // https://developer.nvidia.com/gpugems/gpugems3/part-i-geometry/chapter-1-generating-complex-procedural-terrains-using-gpu
+    // https://people.eecs.berkeley.edu/~jrs/meshpapers/LorensenCline.pdf
+    public enum MeshingAlgorithm {
+		Minecraft,
 		/// <summary>
 		/// The simplest algorithm. It takes note of each connecing vertices that are higher than the surface level and
 		/// looks up the triangles to be meshed from a table.
@@ -60,39 +64,129 @@ public partial class VoxelMesh : MeshInstance3D {
         base._Process(delta);
 		if (this.Regenerate) {
 			this.Regenerate = false;
+			this.RegenerateGeometry();
+		}
+		if (this.LastAlgorithm != this.Algorithm) {
+			this.LastAlgorithm = this.Algorithm;
 			this.BuildMesh();
 		}
     }
 
+    private void RegenerateGeometry()
+    {
+		this.Data = VoxelData.GeneratePerlin(new Aabb(Vector3.Zero, Vector3.One * 32));
+		this.BuildMesh();
+    }
+
     private void BuildMesh()
     {
-        if (this.Algorithm == MeshingAlgorithm.SimpleMarchingCubes) {
-			this.BuildMesh_SimpleMarchingCubes();
-		} else {
-			throw new NotImplementedException();
+		switch(this.Algorithm) {
+			case MeshingAlgorithm.SimpleMarchingCubes:
+				this.BuildMesh_SimpleMarchingCubes();
+				break;
+			case MeshingAlgorithm.Minecraft:
+				this.BuildMesh_Minecraft();
+				break;
+			default:
+				GD.PushError(new NotImplementedException($"Meshing algorithm {this.Algorithm} not implemented."));
+				break;
 		}
     }
 
-    private void BuildMesh_SimpleMarchingCubes() {
-		VoxelData data = VoxelData.GeneratePerlin(new Aabb(Vector3.Zero, Vector3.One * 32));
+    private void BuildMesh_Minecraft()
+    {
 		SurfaceTool builder = new SurfaceTool();
 		builder.Begin(Mesh.PrimitiveType.Triangles);
 		if (this.Material != null) {
 			builder.SetMaterial(this.Material);
 		}
-		for (int z = 0; z < data.Depth - 1; z++) {
-			for (int y = 0; y < data.Height - 1; y++) {
-				for (int x = 0; x < data.Width - 1; x++) {
+		for (int z = 0; z < this.Data.Depth; z++) {
+			for (int y = 0; y < this.Data.Height; y++) {
+				for (int x = 0; x < this.Data.Width; x++) {
+					if (this.Data.Densities[x, y, z] >= this.Data.SurfaceLevel) {
+						continue;
+					}
+					// Top face
+					if (y < this.Data.Height - 1 && this.Data.Densities[x, y + 1, z] > this.Data.SurfaceLevel) {
+						builder.AddVertex(new Vector3(x - 0.5f, y + 0.5f, -z - 0.5f));
+						builder.AddVertex(new Vector3(x - 0.5f, y + 0.5f, -z + 0.5f));
+						builder.AddVertex(new Vector3(x + 0.5f, y + 0.5f, -z - 0.5f));
+						builder.AddVertex(new Vector3(x - 0.5f, y + 0.5f, -z + 0.5f));
+						builder.AddVertex(new Vector3(x + 0.5f, y + 0.5f, -z + 0.5f));
+						builder.AddVertex(new Vector3(x + 0.5f, y + 0.5f, -z - 0.5f));
+					}
+					// Right face
+					if (x < this.Data.Width - 1 && this.Data.Densities[x + 1, y, z] > this.Data.SurfaceLevel) {
+						builder.AddVertex(new Vector3(x + 0.5f, y - 0.5f, -z - 0.5f));
+						builder.AddVertex(new Vector3(x + 0.5f, y + 0.5f, -z - 0.5f));
+						builder.AddVertex(new Vector3(x + 0.5f, y - 0.5f, -z + 0.5f));
+						builder.AddVertex(new Vector3(x + 0.5f, y + 0.5f, -z - 0.5f));
+						builder.AddVertex(new Vector3(x + 0.5f, y + 0.5f, -z + 0.5f));
+						builder.AddVertex(new Vector3(x + 0.5f, y - 0.5f, -z + 0.5f));
+					}
+					// Front face
+					if (z < this.Data.Depth - 1 && this.Data.Densities[x, y, z + 1] > this.Data.SurfaceLevel) {
+						builder.AddVertex(new Vector3(x - 0.5f, y - 0.5f, -z - 0.5f));
+						builder.AddVertex(new Vector3(x - 0.5f, y + 0.5f, -z - 0.5f));
+						builder.AddVertex(new Vector3(x + 0.5f, y - 0.5f, -z - 0.5f));
+						builder.AddVertex(new Vector3(x - 0.5f, y + 0.5f, -z - 0.5f));
+						builder.AddVertex(new Vector3(x + 0.5f, y + 0.5f, -z - 0.5f));
+						builder.AddVertex(new Vector3(x + 0.5f, y - 0.5f, -z - 0.5f));
+					}
+					// Bottom face
+					if (y > 0 && this.Data.Densities[x, y - 1, z] >= this.Data.SurfaceLevel) {
+						builder.AddVertex(new Vector3(x - 0.5f, y - 0.5f, -z - 0.5f));
+						builder.AddVertex(new Vector3(x + 0.5f, y - 0.5f, -z - 0.5f));
+						builder.AddVertex(new Vector3(x - 0.5f, y - 0.5f, -z + 0.5f));
+						builder.AddVertex(new Vector3(x + 0.5f, y - 0.5f, -z - 0.5f));
+						builder.AddVertex(new Vector3(x + 0.5f, y - 0.5f, -z + 0.5f));
+						builder.AddVertex(new Vector3(x - 0.5f, y - 0.5f, -z + 0.5f));
+					}
+					// Left face
+					if (x > 0 && this.Data.Densities[x - 1, y, z] >= this.Data.SurfaceLevel) {
+						builder.AddVertex(new Vector3(x - 0.5f, y - 0.5f, -z - 0.5f));
+						builder.AddVertex(new Vector3(x - 0.5f, y - 0.5f, -z + 0.5f));
+						builder.AddVertex(new Vector3(x - 0.5f, y + 0.5f, -z - 0.5f));
+						builder.AddVertex(new Vector3(x - 0.5f, y - 0.5f, -z + 0.5f));
+						builder.AddVertex(new Vector3(x - 0.5f, y + 0.5f, -z + 0.5f));
+						builder.AddVertex(new Vector3(x - 0.5f, y + 0.5f, -z - 0.5f));
+					}
+					// Back face
+					if (z > 0 && this.Data.Densities[x, y, z - 1] >= this.Data.SurfaceLevel) {
+						builder.AddVertex(new Vector3(x - 0.5f, y - 0.5f, -z + 0.5f));
+						builder.AddVertex(new Vector3(x + 0.5f, y - 0.5f, -z + 0.5f));
+						builder.AddVertex(new Vector3(x - 0.5f, y + 0.5f, -z + 0.5f));
+						builder.AddVertex(new Vector3(x + 0.5f, y - 0.5f, -z + 0.5f));
+						builder.AddVertex(new Vector3(x + 0.5f, y + 0.5f, -z + 0.5f));
+						builder.AddVertex(new Vector3(x - 0.5f, y + 0.5f, -z + 0.5f));
+					}
+				}
+			}
+		}
+		builder.GenerateNormals();
+		this.Mesh = builder.Commit();
+    }
+
+    private void BuildMesh_SimpleMarchingCubes()
+	{
+		SurfaceTool builder = new SurfaceTool();
+		builder.Begin(Mesh.PrimitiveType.Triangles);
+		if (this.Material != null) {
+			builder.SetMaterial(this.Material);
+		}
+		for (int z = 0; z < this.Data.Depth - 1; z++) {
+			for (int y = 0; y < this.Data.Height - 1; y++) {
+				for (int x = 0; x < this.Data.Width - 1; x++) {
 					int mcCaseIndex = MarchingCubesTable.GetCaseIndex(
-						data.Densities[x, y, z],
-						data.Densities[x + 1, y, z],
-						data.Densities[x, y + 1, z],
-						data.Densities[x + 1, y + 1, z],
-						data.Densities[x, y, z + 1],
-						data.Densities[x + 1, y, z + 1],
-						data.Densities[x, y + 1, z + 1],
-						data.Densities[x + 1, y + 1, z + 1],
-						data.SurfaceLevel
+						this.Data.Densities[x, y, z],
+						this.Data.Densities[x + 1, y, z],
+						this.Data.Densities[x, y + 1, z],
+						this.Data.Densities[x + 1, y + 1, z],
+						this.Data.Densities[x, y, z + 1],
+						this.Data.Densities[x + 1, y, z + 1],
+						this.Data.Densities[x, y + 1, z + 1],
+						this.Data.Densities[x + 1, y + 1, z + 1],
+						this.Data.SurfaceLevel
 					);
 					for (int i = 0; i < 12 && MarchingCubesTable.CaseArrays[mcCaseIndex, i] != -1; i += 3) {
 						builder.AddVertex(new Vector3(x, y, -z) + MarchingCubesTable.EdgePositionsV[MarchingCubesTable.CaseArrays[mcCaseIndex, i]]);

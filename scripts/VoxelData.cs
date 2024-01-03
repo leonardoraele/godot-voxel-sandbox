@@ -27,8 +27,13 @@ public partial record VoxelData
 	}
 
 	public Aabb Space { get; init; }
-    public float SurfaceLevel { get; init; }
-    public float[,,] Densities { get; init; } = null!;
+	/// <summary>
+	/// Higher values mean the voxel is more dense, and lower values mean the voxel is less dense. Values lower than the
+	/// surface level mean the voxel represents empty space. Values equal to or greater than the surface level represent
+	/// solid voxels.
+	/// </summary>
+    public float SurfaceLevel { get; init; } = 0;
+    public float[,,] Densities { get; init; } = new float[0, 0, 0];
 
 	public int Width => this.Densities.GetLength(0);
 	public int Height => this.Densities.GetLength(1);

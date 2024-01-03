@@ -61,11 +61,18 @@ dynamic meshing before.
 	I was also annoyed with how textures looked when I added textures that have a set orientation (e.g. the texture must
 	be rendered in the correct orientation otherwise it look to be sideways or upside-down), so I took the time to
 	experiment with setting the UV coordinates of vertexes and I finally managed to learned how UV work. I was able to
-	setup the mesh so that the textures are correctly oriented on the side faces of the cubes. I still have to learn how
-	to make so that I can use a different texture for the top and bottom face of the texture. I know I could setup the
-	UVs in a way that it would read different parts of the texture for top, side, and bottom faces of the mesh, but this
-	would be less flexible, since I would have to build textures in a very specific way to texture the cubes properly.
-	Now that I think about it, I'm pretty sure that's how graphics were set up on old games. I remember how (the
-	original) The Sims' character texture files looked. But I'm using Kenny assets and the texture for each face of the
-	cube is separate from each other. I want to setup the cube material so that I can use these assets without having to
-	open Gimp to merge all the separate textures into one.
+	setup the mesh so that the textures are correctly oriented on the side faces of the cubes.
+	I still have to learn how to make so that I can use a different texture for the top and bottom face of the texture.
+	I know I could setup the UVs in a way that it would read different parts of the texture for top, side, and bottom
+	faces of the mesh, but this would be less flexible, since I would have to build textures in a very specific way to
+	texture the cubes properly. I'm using Kenny assets and the textures for each face of the cube is separate from each
+	other. I want to setup the cube material so that I can use these assets without having to open Gimp to merge all the
+	separate textures into one.
+- 18:34		**Checkpoint 5** The "problem" (not really a problem, just a style preference) with the shadows was being
+	caused by the automatically generated normals. (normals were being generated with
+	`Godot.SurfaceTool.GenerateNormals`) The automatic algorithm would create diagonal normals at the edges of the mesh.
+	(even though the geometry always have angles multiple of 90 degrees) I added normal vectors manually to each surface
+	of the mesh (it was easy to do for the Minecraft rendering algorithm because all surfaces are aligned with one of
+	the three axis) and the surfaces were shaded as I would expect from a model made up of cubes.
+	I also discovered that Meshes can have multiple materials. I can set different materials for the side, top, and
+	bottom surfaces of the generated meshes.

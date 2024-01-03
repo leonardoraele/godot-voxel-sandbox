@@ -124,6 +124,7 @@ public partial class VoxelMesh : MeshInstance3D {
 					}
 					// Top face
 					if (y < this.Data.Height - 1 && this.Data.Densities[x, y + 1, z] < this.Data.SurfaceLevel) {
+						builder.SetNormal(Vector3.Up);
 						builder.SetUV(Vector2.Down);
 						builder.AddVertex(new Vector3(x - 0.5f, y + 0.5f, -z - 0.5f));
 						builder.SetUV(Vector2.One);
@@ -139,6 +140,7 @@ public partial class VoxelMesh : MeshInstance3D {
 					}
 					// Right face
 					if (x < this.Data.Width - 1 && this.Data.Densities[x + 1, y, z] < this.Data.SurfaceLevel) {
+						builder.SetNormal(Vector3.Right);
 						builder.SetUV(Vector2.One);
 						builder.AddVertex(new Vector3(x + 0.5f, y - 0.5f, -z - 0.5f));
 						builder.SetUV(Vector2.Down);
@@ -154,6 +156,7 @@ public partial class VoxelMesh : MeshInstance3D {
 					}
 					// Back face (Z-)
 					if (z < this.Data.Depth - 1 && this.Data.Densities[x, y, z + 1] < this.Data.SurfaceLevel) {
+						builder.SetNormal(Vector3.Back);
 						builder.SetUV(Vector2.Down);
 						builder.AddVertex(new Vector3(x - 0.5f, y - 0.5f, -z - 0.5f));
 						builder.SetUV(Vector2.One);
@@ -169,6 +172,7 @@ public partial class VoxelMesh : MeshInstance3D {
 					}
 					// Bottom face
 					if (y > 0 && this.Data.Densities[x, y - 1, z] < this.Data.SurfaceLevel) {
+						builder.SetNormal(Vector3.Down);
 						builder.SetUV(Vector2.Down);
 						builder.AddVertex(new Vector3(x - 0.5f, y - 0.5f, -z - 0.5f));
 						builder.SetUV(Vector2.Zero);
@@ -184,6 +188,7 @@ public partial class VoxelMesh : MeshInstance3D {
 					}
 					// Left face
 					if (x > 0 && this.Data.Densities[x - 1, y, z] < this.Data.SurfaceLevel) {
+						builder.SetNormal(Vector3.Left);
 						builder.SetUV(Vector2.Down);
 						builder.AddVertex(new Vector3(x - 0.5f, y - 0.5f, -z - 0.5f));
 						builder.SetUV(Vector2.Zero);
@@ -199,6 +204,7 @@ public partial class VoxelMesh : MeshInstance3D {
 					}
 					// Front face (Z+)
 					if (z > 0 && this.Data.Densities[x, y, z - 1] < this.Data.SurfaceLevel) {
+						builder.SetNormal(Vector3.Forward);
 						builder.SetUV(Vector2.Down);
 						builder.AddVertex(new Vector3(x - 0.5f, y - 0.5f, -z + 0.5f));
 						builder.SetUV(Vector2.Zero);
@@ -215,7 +221,6 @@ public partial class VoxelMesh : MeshInstance3D {
 				}
 			}
 		}
-		builder.GenerateNormals();
 		builder.GenerateTangents();
 		this.Mesh = builder.Commit();
     }

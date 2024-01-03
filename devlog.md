@@ -53,3 +53,19 @@ dynamic meshing before.
 ### 03/01/2023
 - 00:48		**Checkpoint 4: Implemented Minecraft meshing algorithm** I implemented Minecraft meshing algorithm to
 	compare the result of the marching cube with the simple block-based algorithm.
+- 10:08		**Checkpoint 4a** Since I added Minecraft meshing algorithm, I've been annoyed that the shadows look off.
+	The game is rendering smooth shadows and smoothly lighting surfaces, but I wanted flat shadows—I want every mesh
+	that face the same direction to be shaded equally in every pixel. I also want stronger shadows close to the edges of
+	the surfaces that connect to other cubes—I think it's called ambient occlusion—but nothing happens when I turn
+	ambient occlusion on on the mesh's material.
+	I was also annoyed with how textures looked when I added textures that have a set orientation (e.g. the texture must
+	be rendered in the correct orientation otherwise it look to be sideways or upside-down), so I took the time to
+	experiment with setting the UV coordinates of vertexes and I finally managed to learned how UV work. I was able to
+	setup the mesh so that the textures are correctly oriented on the side faces of the cubes. I still have to learn how
+	to make so that I can use a different texture for the top and bottom face of the texture. I know I could setup the
+	UVs in a way that it would read different parts of the texture for top, side, and bottom faces of the mesh, but this
+	would be less flexible, since I would have to build textures in a very specific way to texture the cubes properly.
+	Now that I think about it, I'm pretty sure that's how graphics were set up on old games. I remember how (the
+	original) The Sims' character texture files looked. But I'm using Kenny assets and the texture for each face of the
+	cube is separate from each other. I want to setup the cube material so that I can use these assets without having to
+	open Gimp to merge all the separate textures into one.

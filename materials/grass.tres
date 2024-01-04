@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://blraiapgpdoqk"]
+
+[ext_resource type="Texture2D" uid="uid://bkc5ybgj4ywnl" path="res://textures/PNG/Tiles/grass_top.png" id="1_w1w0t"]
+
+[resource]
+shading_mode = 2
+albedo_color = Color(0.517647, 0.517647, 0.517647, 1)
+albedo_texture = ExtResource("1_w1w0t")

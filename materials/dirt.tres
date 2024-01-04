@@ -1,0 +1,9 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://dlmmtn0ssrcnx"]
+
+[ext_resource type="Texture2D" uid="uid://c8b7me5760x8p" path="res://textures/PNG/Tiles/dirt.png" id="1_x7ww6"]
+
+[resource]
+diffuse_mode = 3
+specular_mode = 1
+albedo_color = Color(0.54902, 0.54902, 0.54902, 1)
+albedo_texture = ExtResource("1_x7ww6")
